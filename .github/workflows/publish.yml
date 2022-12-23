@@ -16,5 +16,5 @@ jobs:
         - name: Run ProjectBuild
           run: | 
             dotnet run --project ProjectBuild/ProjectBuild.csproj
-            source Source/variables.sh
+            source variables.sh
             echo $PACKAGE_VERSION

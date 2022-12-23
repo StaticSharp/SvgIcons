@@ -7,7 +7,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<EmbeddedResource Include="svg\**\*.svg" />
+		<EmbeddedResource Include="_Generated\svg\**\*.svg" />
 	</ItemGroup>
 	
 </Project>

@@ -44,9 +44,7 @@ public class Program {
 
     public static async Task Main(string[] args) {
 
-        var sourceDirectory = Path.GetFullPath(Path.Combine(ProjectDirectory.Path, "../Source"));
-
-
+        var sourceDirectory = Path.GetFullPath(Path.Combine(ProjectDirectory.Path, "../Source/_Generated"));
 
         await SimpleIcons(sourceDirectory);
         await MakeMaterialDesignIcons(sourceDirectory);
@@ -169,9 +167,15 @@ public class Program {
             }
 
 
+            var svgFilesBaseDirectory = Path.Combine(sourceDirectory, "svg", "SimpleIcons");
+            if (!Directory.Exists(svgFilesBaseDirectory))
+            {
+                Directory.CreateDirectory(svgFilesBaseDirectory);
+            }
+
             foreach (var i in identifierSlig) {
                 var entry = files[i.Value];
-                var filePath = Path.Combine(sourceDirectory, "svg", "SimpleIcons", entry.Name);
+                var filePath = Path.Combine(svgFilesBaseDirectory, entry.Name);
                 
                 if (!File.Exists(filePath)) {
                     entry.ExtractToFile(filePath);
@@ -209,7 +213,7 @@ public class Program {
             }*/
         }
 
-        var csFileContent = new Scope("namespace Icons") {
+        var csFileContent = new Scope("namespace SvgIcons") {
             iconClass
         };
         File.WriteAllText(csFilePath, csFileContent.ToString());
@@ -229,9 +233,15 @@ public class Program {
         };
 
         using (ZipArchive archive = new ZipArchive(zipStream)) {
+            var svgFilesBaseDirectory = Path.Combine(sourceDirectory, "svg", "MaterialDesignIcons");
+            if (!Directory.Exists(svgFilesBaseDirectory))
+            {
+                Directory.CreateDirectory(svgFilesBaseDirectory);
+            }
+
             foreach (ZipArchiveEntry entry in archive.Entries.Where(x => x.FullName.StartsWith("MaterialDesign-master/svg/") && x.Name.EndsWith(".svg"))) {
                 var fileName = KebabToPascalName(entry.Name);
-                var filePath = Path.Combine(sourceDirectory, "svg", "MaterialDesignIcons", fileName);
+                var filePath = Path.Combine(svgFilesBaseDirectory, fileName);
                 var fileNameWithoutExtension = Path.GetFileNameWithoutExtension(fileName);
                 if (!File.Exists(filePath)) {
                     Console.WriteLine(fileName);
@@ -251,7 +261,7 @@ public class Program {
             }
         }
 
-        var csFileContent = new Scope("namespace Icons") {
+        var csFileContent = new Scope("namespace SvgIcons") {
             iconClass
         };
         File.WriteAllText(csFilePath, csFileContent.ToString());

@@ -1,6 +1,6 @@
 ﻿using System.Reflection;
 
-namespace Icons;
+namespace SvgIcons;
 public class Icon {
 
     static Assembly Assembly = typeof(Icon).Assembly;

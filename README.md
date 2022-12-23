@@ -7,8 +7,8 @@ Currently, the library includes two sets of icons:
 
 |  name | repository | site |
 | --- | --- | --- |
-| MaterialDesignIcons | [simple-icons/simple-icons](https://github.com/simple-icons/simple-icons) | https://materialdesignicons.com |
-| SimpleIcons | [Templarian/MaterialDesign](https://github.com/simple-icons/simple-icons) | https://simpleicons.org |
+| MaterialDesignIcons | [Templarian/MaterialDesign](https://github.com/Templarian/MaterialDesign) | https://materialdesignicons.com |
+| SimpleIcons | [simple-icons/simple-icons](https://github.com/simple-icons/simple-icons) | https://simpleicons.org |
 
 
 SvgIcons is available as a NuGet package

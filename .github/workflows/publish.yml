@@ -18,3 +18,4 @@ jobs:
             dotnet run --project ProjectBuild/ProjectBuild.csproj
             source variables.sh
             echo $PACKAGE_VERSION
+            dotnet pack Source/SvgIcons.csproj -c Release -p:PackageVersion=$PACKAGE_VERSION

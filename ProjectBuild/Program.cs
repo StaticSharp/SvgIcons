@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using ProjectBuild;
 using Scopes.C;
 using System;
 using System.IO;
@@ -44,11 +45,39 @@ public class Program {
 
     public static async Task Main(string[] args) {
 
-        var sourceDirectory = Path.GetFullPath(Path.Combine(ProjectDirectory.Path, "../Source/_Generated"));
+        var sourceDirectory = Path.GetFullPath(Path.Combine(ProjectDirectory.Path, "../Source"));
+        var sourceGeneratedDirectory = Path.GetFullPath(Path.Combine(sourceDirectory, "_Generated"));
 
-        await SimpleIcons(sourceDirectory);
-        await MakeMaterialDesignIcons(sourceDirectory);
+        await SimpleIcons(sourceGeneratedDirectory);
+        await MakeMaterialDesignIcons(sourceGeneratedDirectory);
 
+        var nugetPackageVersion = await File.ReadAllTextAsync("NugetPackageVersion.config");
+
+        Console.WriteLine();
+        Console.WriteLine(">>> Creating nuget package...");
+        await CommandLineExecutor.ExecuteCommandAsync(
+            "dotnet", 
+            $"pack {sourceDirectory}/SvgIcons.csproj " +
+            $"-c Release " +
+            $"-o {Path.Combine(sourceDirectory, "Out")} " +
+            $"-p:PackageVersion=\"{nugetPackageVersion}\"",
+            async (logs) => Console.WriteLine(">>> " + logs));
+
+        Console.WriteLine();
+        Console.WriteLine(">>> Pushing package to nuget.org...");
+        var nugetKey = Environment.GetEnvironmentVariable("NUGET_KEY");
+        if (string.IsNullOrEmpty(nugetKey))
+        {
+            throw new Exception("ERROR. Missing nuget key. Please provide nuget key via NUGET_KEY environment variable");
+        }
+
+        await CommandLineExecutor.ExecuteCommandAsync(
+            "dotnet",
+            $"nuget push " +
+            $"{Path.Combine(sourceDirectory, $"Out/SvgIcons.{nugetPackageVersion}.nupkg")} " +
+            $"-k {nugetKey} " +
+            $"-s https://api.nuget.org/v3/index.json",
+            async (logs) => Console.WriteLine(">>> " + logs));
     }
     static async Task SimpleIcons(string sourceDirectory) {
         var csFilePath = Path.Combine(sourceDirectory, "SimpleIcons.cs");

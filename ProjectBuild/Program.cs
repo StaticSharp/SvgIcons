@@ -51,7 +51,8 @@ public class Program {
         await SimpleIcons(sourceGeneratedDirectory);
         await MakeMaterialDesignIcons(sourceGeneratedDirectory);
 
-        var nugetPackageVersion = await File.ReadAllTextAsync("NugetPackageVersion.config");
+        var nugetPackageVersion = await File.ReadAllTextAsync(
+            Path.GetFullPath(Path.Combine(ProjectDirectory.Path, "NugetPackageVersion.config")));
 
         Console.WriteLine();
         Console.WriteLine(">>> Creating nuget package...");

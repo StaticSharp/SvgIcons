@@ -1,6 +1,8 @@
 name: publish to nuget
 on:
-  [push]
+  push:
+    branches:
+      - main
 jobs:
     Nuget-publish:
       runs-on: ubuntu-22.04

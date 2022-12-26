@@ -1,6 +1,8 @@
+/ProjectBuild/_Out
 /Source/.vs
 /Source/bin
 /Source/obj
+/Source/_Generated
 /ProjectBuild/obj
 /ProjectBuild/.vs
 /ProjectBuild/bin

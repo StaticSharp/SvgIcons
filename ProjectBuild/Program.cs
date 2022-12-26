@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using ProjectBuild;
 using Scopes.C;
 using System;
 using System.IO;
@@ -45,16 +46,44 @@ public class Program {
     public static async Task Main(string[] args) {
 
         var sourceDirectory = Path.GetFullPath(Path.Combine(ProjectDirectory.Path, "../Source"));
+        var sourceGeneratedDirectory = Path.GetFullPath(Path.Combine(sourceDirectory, "_Generated"));
+        var nupkgDirectory = Path.GetFullPath(Path.Combine(ProjectDirectory.Path, "_Out"));
 
+        await SimpleIcons(sourceGeneratedDirectory);
+        await MakeMaterialDesignIcons(sourceGeneratedDirectory);
 
+        var nugetPackageVersion = await File.ReadAllTextAsync(
+            Path.GetFullPath(Path.Combine(ProjectDirectory.Path, "NugetPackageVersion.config")));
 
-        await SimpleIcons(sourceDirectory);
-        await MakeMaterialDesignIcons(sourceDirectory);
+        Console.WriteLine();
+        Console.WriteLine(">>> Creating nuget package...");
+        await CommandLineExecutor.ExecuteCommandAsync(
+            "dotnet", 
+            $"pack {sourceDirectory}/SvgIcons.csproj " +
+            $"-c Release " +
+            $"-o {nupkgDirectory} " +
+            $"-p:PackageVersion=\"{nugetPackageVersion}\"",
+            async (logs) => Console.WriteLine(">>> " + logs));
 
+        Console.WriteLine();
+        Console.WriteLine(">>> Pushing package to nuget.org...");
+        var nugetKey = Environment.GetEnvironmentVariable("NUGET_KEY");
+        if (string.IsNullOrEmpty(nugetKey))
+        {
+            throw new Exception("ERROR. Missing nuget key. Please provide nuget key via NUGET_KEY environment variable");
+        }
+
+        await CommandLineExecutor.ExecuteCommandAsync(
+            "dotnet",
+            $"nuget push " +
+            $"{Path.Combine(nupkgDirectory, $"SvgIcons.{nugetPackageVersion}.nupkg")} " +
+            $"-k {nugetKey} " +
+            $"-s https://api.nuget.org/v3/index.json",
+            async (logs) => Console.WriteLine(">>> " + logs));
     }
     static async Task SimpleIcons(string sourceDirectory) {
         var csFilePath = Path.Combine(sourceDirectory, "SimpleIcons.cs");
-
+         
         var zipUrl = "https://github.com/simple-icons/simple-icons/archive/refs/heads/master.zip";
 
         var zipResponse = await HttpClient.SendAsync(new HttpRequestMessage(HttpMethod.Get, zipUrl));
@@ -169,9 +198,15 @@ public class Program {
             }
 
 
+            var svgFilesBaseDirectory = Path.Combine(sourceDirectory, "svg", "SimpleIcons");
+            if (!Directory.Exists(svgFilesBaseDirectory))
+            {
+                Directory.CreateDirectory(svgFilesBaseDirectory);
+            }
+
             foreach (var i in identifierSlig) {
                 var entry = files[i.Value];
-                var filePath = Path.Combine(sourceDirectory, "svg", "SimpleIcons", entry.Name);
+                var filePath = Path.Combine(svgFilesBaseDirectory, entry.Name);
                 
                 if (!File.Exists(filePath)) {
                     entry.ExtractToFile(filePath);
@@ -209,7 +244,7 @@ public class Program {
             }*/
         }
 
-        var csFileContent = new Scope("namespace Icons") {
+        var csFileContent = new Scope("namespace SvgIcons") {
             iconClass
         };
         File.WriteAllText(csFilePath, csFileContent.ToString());
@@ -229,9 +264,15 @@ public class Program {
         };
 
         using (ZipArchive archive = new ZipArchive(zipStream)) {
+            var svgFilesBaseDirectory = Path.Combine(sourceDirectory, "svg", "MaterialDesignIcons");
+            if (!Directory.Exists(svgFilesBaseDirectory))
+            {
+                Directory.CreateDirectory(svgFilesBaseDirectory);
+            }
+
             foreach (ZipArchiveEntry entry in archive.Entries.Where(x => x.FullName.StartsWith("MaterialDesign-master/svg/") && x.Name.EndsWith(".svg"))) {
                 var fileName = KebabToPascalName(entry.Name);
-                var filePath = Path.Combine(sourceDirectory, "svg", "MaterialDesignIcons", fileName);
+                var filePath = Path.Combine(svgFilesBaseDirectory, fileName);
                 var fileNameWithoutExtension = Path.GetFileNameWithoutExtension(fileName);
                 if (!File.Exists(filePath)) {
                     Console.WriteLine(fileName);
@@ -251,7 +292,7 @@ public class Program {
             }
         }
 
-        var csFileContent = new Scope("namespace Icons") {
+        var csFileContent = new Scope("namespace SvgIcons") {
             iconClass
         };
         File.WriteAllText(csFilePath, csFileContent.ToString());

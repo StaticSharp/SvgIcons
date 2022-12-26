@@ -1,13 +1,17 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
 		<TargetFramework>net6.0</TargetFramework>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<PackageLicenseFile>LICENSE</PackageLicenseFile>
 	</PropertyGroup>
 
 	<ItemGroup>
-		<EmbeddedResource Include="svg\**\*.svg" />
+		<EmbeddedResource Include="_Generated\svg\**\*.svg" />
+		<None Include="..\README.md" Pack="true" PackagePath="\"/>
+		<None Include="..\LICENSE" Pack="true" PackagePath="\"/>
 	</ItemGroup>
 	
 </Project>

@@ -1,6 +1,6 @@
 ﻿using System.Reflection;
 
-namespace Icons;
+namespace SvgIcons;
 public class Icon {
 
     static Assembly Assembly = typeof(Icon).Assembly;
@@ -15,7 +15,7 @@ public class Icon {
     }
     string GetResourcePathFromName() {
         Assembly assembly = GetType().Assembly;
-        var resourcePath = assembly.GetName().Name + ".svg." + Path + ".svg";
+        var resourcePath = assembly.GetName().Name + "._Generated.svg." + Path + ".svg";
         return resourcePath;
     }
     public string GetSvg() {

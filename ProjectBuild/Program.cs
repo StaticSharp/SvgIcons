@@ -47,6 +47,7 @@ public class Program {
 
         var sourceDirectory = Path.GetFullPath(Path.Combine(ProjectDirectory.Path, "../Source"));
         var sourceGeneratedDirectory = Path.GetFullPath(Path.Combine(sourceDirectory, "_Generated"));
+        var nupkgDirectory = Path.GetFullPath(Path.Combine(ProjectDirectory.Path, "_Out"));
 
         await SimpleIcons(sourceGeneratedDirectory);
         await MakeMaterialDesignIcons(sourceGeneratedDirectory);
@@ -60,7 +61,7 @@ public class Program {
             "dotnet", 
             $"pack {sourceDirectory}/SvgIcons.csproj " +
             $"-c Release " +
-            $"-o {Path.Combine(sourceDirectory, "Out")} " +
+            $"-o {nupkgDirectory} " +
             $"-p:PackageVersion=\"{nugetPackageVersion}\"",
             async (logs) => Console.WriteLine(">>> " + logs));
 
@@ -75,14 +76,14 @@ public class Program {
         await CommandLineExecutor.ExecuteCommandAsync(
             "dotnet",
             $"nuget push " +
-            $"{Path.Combine(sourceDirectory, $"Out/SvgIcons.{nugetPackageVersion}.nupkg")} " +
+            $"{Path.Combine(nupkgDirectory, $"SvgIcons.{nugetPackageVersion}.nupkg")} " +
             $"-k {nugetKey} " +
             $"-s https://api.nuget.org/v3/index.json",
             async (logs) => Console.WriteLine(">>> " + logs));
     }
     static async Task SimpleIcons(string sourceDirectory) {
         var csFilePath = Path.Combine(sourceDirectory, "SimpleIcons.cs");
-
+         
         var zipUrl = "https://github.com/simple-icons/simple-icons/archive/refs/heads/master.zip";
 
         var zipResponse = await HttpClient.SendAsync(new HttpRequestMessage(HttpMethod.Get, zipUrl));

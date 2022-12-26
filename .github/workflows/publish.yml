@@ -16,4 +16,4 @@ jobs:
         - name: Run ProjectBuild
           run: dotnet run --project ProjectBuild/ProjectBuild.csproj
           env: 
-            NUGET_KEY : {secrets.NUGET_KEY}
+            NUGET_KEY : ${{secrets.NUGET_KEY}}

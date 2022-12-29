@@ -55,6 +55,9 @@ public class Program {
         var nugetPackageVersion = await File.ReadAllTextAsync(
             Path.GetFullPath(Path.Combine(ProjectDirectory.Path, "NugetPackageVersion.config")));
 
+        var isGithubActionsBuild = Environment.GetEnvironmentVariable("GITHUB_ACTIONS").ToLower() == "true";
+        Console.WriteLine($">>> isGithubActionsBuild = {isGithubActionsBuild}");
+
         Console.WriteLine();
         Console.WriteLine(">>> Creating nuget package...");
         await CommandLineExecutor.ExecuteCommandAsync(
@@ -62,7 +65,10 @@ public class Program {
             $"pack {sourceDirectory}/SvgIcons.csproj " +
             $"-c Release " +
             $"-o {nupkgDirectory} " +
-            $"-p:PackageVersion=\"{nugetPackageVersion}\"",
+            $"-p:PackageVersion=\"{nugetPackageVersion}\" " +
+            $"-p:IncludeSymbols=true " +
+            $"-p:SymbolPackageFormat=snupkg " +
+            (isGithubActionsBuild ? $"-p:ContinuousIntegrationBuild" : ""),
             async (logs) => Console.WriteLine(">>> " + logs));
 
         Console.WriteLine();
@@ -94,14 +100,14 @@ public class Program {
 
         };
 
-
+        /// Returns: Key - icon name for code (SvgIcons.<Name>), Value - SVG filename, without extension
         KeyValuePair<string,string> TitleToIdentifierSlig(string title) {
             if (title == "del.icio.us") return new("DelIcioUs", "delicious");
             if (title == "Ferrari N.V.") return new("FerrariNV", "ferrarinv");
             if (title == "Sat.1") return new("Sat1", "sat1");
             if (title == "Warner Bros.") return new("WarnerBros", "warnerbros");
+            if (title == "Île-de-France Mobilités") return new("IledefranceMobilites", "iledefrancemobilites");
 
-            
             title = title.Replace("+", "Plus");
             title = title.Replace("&", "And");
 

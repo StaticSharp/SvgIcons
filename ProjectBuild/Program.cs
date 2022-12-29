@@ -55,7 +55,7 @@ public class Program {
         var nugetPackageVersion = await File.ReadAllTextAsync(
             Path.GetFullPath(Path.Combine(ProjectDirectory.Path, "NugetPackageVersion.config")));
 
-        var isGithubActionsBuild = Environment.GetEnvironmentVariable("GITHUB_ACTIONS").ToLower() == "true";
+        var isGithubActionsBuild = Environment.GetEnvironmentVariable("GITHUB_ACTIONS")?.ToLower() == "true";
         Console.WriteLine($">>> isGithubActionsBuild = {isGithubActionsBuild}");
 
         Console.WriteLine();
@@ -66,9 +66,13 @@ public class Program {
             $"-c Release " +
             $"-o {nupkgDirectory} " +
             $"-p:PackageVersion=\"{nugetPackageVersion}\" " +
-            $"-p:IncludeSymbols=true " +
-            $"-p:SymbolPackageFormat=snupkg " +
-            (isGithubActionsBuild ? $"-p:ContinuousIntegrationBuild" : ""),
+            // the following is needed to allow debug inside nuget
+            /*$"-p:IncludeSymbols=true " +
+            $"-p:SymbolPackageFormat=snupkg " +*/
+            (isGithubActionsBuild ? $"-p:ContinuousIntegrationBuild=true " : "") + 
+            $"-p:PublishRepositoryUrl=true " +
+            $"-p:EmbedUntrackedSources=true " +
+            $"-p:DebugType=embedded",
             async (logs) => Console.WriteLine(">>> " + logs));
 
         Console.WriteLine();
@@ -79,7 +83,7 @@ public class Program {
             throw new Exception("ERROR. Missing nuget key. Please provide nuget key via NUGET_KEY environment variable");
         }
 
-        await CommandLineExecutor.ExecuteCommandAsync(
+        await  CommandLineExecutor.ExecuteCommandAsync(
             "dotnet",
             $"nuget push " +
             $"{Path.Combine(nupkgDirectory, $"SvgIcons.{nugetPackageVersion}.nupkg")} " +

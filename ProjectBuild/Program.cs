@@ -63,7 +63,7 @@ public class Program {
         await CommandLineExecutor.ExecuteCommandAsync(
             "dotnet", 
             $"pack {sourceDirectory}/SvgIcons.csproj " +
-            $"-c Debug " +
+            $"-c Release " +
             $"-o {nupkgDirectory} " +
             $"-p:PackageVersion=\"{nugetPackageVersion}\" " +
             // the following is needed to allow debug inside nuget

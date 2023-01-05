@@ -63,12 +63,12 @@ public class Program {
         await CommandLineExecutor.ExecuteCommandAsync(
             "dotnet", 
             $"pack {sourceDirectory}/SvgIcons.csproj " +
-            $"-c Release " +
+            $"-c Debug " +
             $"-o {nupkgDirectory} " +
             $"-p:PackageVersion=\"{nugetPackageVersion}\" " +
             // the following is needed to allow debug inside nuget
-            $"-p:IncludeSymbols=true " +
-            /*$"-p:SymbolPackageFormat=snupkg " +*/
+            /*$"-p:IncludeSymbols=true " +
+            $"-p:SymbolPackageFormat=snupkg " +*/
             (isGithubActionsBuild ? $"-p:ContinuousIntegrationBuild=true " : "") + 
             $"-p:PublishRepositoryUrl=true " +
             $"-p:EmbedUntrackedSources=true " +

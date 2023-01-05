@@ -83,7 +83,7 @@ public class Program {
             throw new Exception("ERROR. Missing nuget key. Please provide nuget key via NUGET_KEY environment variable");
         }
 
-        await  CommandLineExecutor.ExecuteCommandAsync(
+        await CommandLineExecutor.ExecuteCommandAsync(
             "dotnet",
             $"nuget push " +
             $"{Path.Combine(nupkgDirectory, $"SvgIcons.{nugetPackageVersion}.nupkg")} " +

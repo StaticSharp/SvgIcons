@@ -12,7 +12,7 @@
 		<EmbeddedResource Include="_Generated\svg\**\*.svg" />
 		<None Include="..\README.md" Pack="true" PackagePath="\"/>
 		<None Include="..\LICENSE" Pack="true" PackagePath="\"/>
-		<PackageReference Include="Microsoft.SourceLink.AzureRepos.Git" Version="1.0.0" PrivateAssets="All"/>
+		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
 	</ItemGroup>
 	
 </Project>

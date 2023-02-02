@@ -6,6 +6,7 @@
 		<Nullable>enable</Nullable>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<PackageLicenseFile>LICENSE</PackageLicenseFile>
+		<PackageIcon>images\icon.png</PackageIcon>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -13,6 +14,7 @@
 		<None Include="..\README.md" Pack="true" PackagePath="\"/>
 		<None Include="..\LICENSE" Pack="true" PackagePath="\"/>
 		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
+		<None Include=".\SvgIcons.png" Pack="true" Visible="false" PackagePath="images\icon.png" />
 	</ItemGroup>
 	
 </Project>
